@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia Interactiva</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <style>
+        body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .question { font-size: 20px; margin-bottom: 10px; }
+        .options button { display: block; width: 100%; padding: 10px; margin: 5px 0; border: none; cursor: pointer; }
+        .correct { background-color: green !important; color: white; }
+        .incorrect { background-color: red !important; color: white; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container animate__animated animate__fadeIn">
+        <h1>Trivia de Conocimientos Generales</h1>
+        <div id="quiz-container">
+            <p id="question" class="question"></p>
+            <div id="options" class="options"></div>
+            <button id="next" class="hidden" onclick="nextQuestion()">Siguiente</button>
+        </div>
+        <div id="result" class="hidden"></div>
+    </div>
+    <script>
+        const questions = [
+            { q: "¿Cuál es el planeta más grande del sistema solar?", o: ["Tierra", "Júpiter", "Marte", "Venus", "Saturno"], a: 1 },
+            { q: "¿Cuántos continentes hay en el mundo?", o: ["5", "6", "7", "8", "4"], a: 2 },
+            { q: "¿Quién escribió 'Don Quijote de la Mancha'?", o: ["Cervantes", "Shakespeare", "Borges", "García Márquez", "Neruda"], a: 0 },
+            { q: "¿Cuál es la capital de Francia?", o: ["Madrid", "Berlín", "París", "Roma", "Londres"], a: 2 },
+            { q: "¿Cuántos lados tiene un hexágono?", o: ["4", "5", "6", "7", "8"], a: 2 },
+            { q: "¿Quién pintó la Mona Lisa?", o: ["Van Gogh", "Picasso", "Da Vinci", "Rembrandt", "Dalí"], a: 2 },
+            { q: "¿Cuál es el océano más grande?", o: ["Atlántico", "Índico", "Ártico", "Pacífico", "Antártico"], a: 3 },
+            { q: "¿Cuántos colores tiene el arcoíris?", o: ["5", "6", "7", "8", "9"], a: 2 },
+            { q: "¿Qué gas necesitamos para respirar?", o: ["Oxígeno", "Nitrógeno", "Dióxido de carbono", "Hidrógeno", "Helio"], a: 0 },
+            { q: "¿Cuál es el metal más abundante en la corteza terrestre?", o: ["Hierro", "Cobre", "Aluminio", "Plata", "Oro"], a: 2 }
+        ];
+        
+        let currentQuestion = 0;
+        let score = 0;
+        
+        function loadQuestion() {
+            document.getElementById("next").classList.add("hidden");
+            const q = questions[currentQuestion];
+            document.getElementById("question").textContent = q.q;
+            const optionsContainer = document.getElementById("options");
+            optionsContainer.innerHTML = "";
+            q.o.forEach((option, index) => {
+                const button = document.createElement("button");
+                button.textContent = option;
+                button.onclick = () => selectAnswer(index);
+                optionsContainer.appendChild(button);
+            });
+        }
+        
+        function selectAnswer(index) {
+            const buttons = document.querySelectorAll("#options button");
+            buttons.forEach(btn => btn.disabled = true);
+            
+            if (index === questions[currentQuestion].a) {
+                buttons[index].classList.add("correct");
+                score++;
+            } else {
+                buttons[index].classList.add("incorrect");
+                buttons[questions[currentQuestion].a].classList.add("correct");
+            }
+            document.getElementById("next").classList.remove("hidden");
+        }
+        
+        function nextQuestion() {
+            currentQuestion++;
+            if (currentQuestion < questions.length) {
+                loadQuestion();
+            } else {
+                showResult();
+            }
+        }
+        
+        function showResult() {
+            document.getElementById("quiz-container").classList.add("hidden");
+            const resultContainer = document.getElementById("result");
+            let feedback = "";
+            if (score === 10) feedback = "¡Excelente! Eres un genio.";
+            else if (score >= 7) feedback = "¡Muy bien! Tienes buenos conocimientos.";
+            else if (score >= 4) feedback = "Podrías mejorar, sigue aprendiendo.";
+            else feedback = "Sigue practicando, ¡no te rindas!";
+            
+            resultContainer.innerHTML = `<h2>Puntaje: ${score} / 10</h2><p>${feedback}</p>`;
+            resultContainer.classList.remove("hidden");
+        }
+        
+        loadQuestion();
+    </script>
+</body>
+</html>
